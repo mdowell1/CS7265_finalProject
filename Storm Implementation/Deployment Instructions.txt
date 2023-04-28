@@ -1,0 +1,24 @@
+Deployment Instructions:
+
+Download and install Python from python.org
+
+Download and install Kafka from https://kafka.apache.org.
+
+Edit the fileName variables in each java file to point to a location on the local filesystem and build the project.
+
+Start Zookeeper server that was installed with Kafka using its included start script and config file.
+
+Start Kafka server using its included start script and config file.
+
+Edit the "data stream.py" file to point to your dataset and run the file.
+
+Once complete, confirm data was loaded to the Kafka server using the following command:
+"./bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092 --all-groups --describe"
+
+If successful you will see a value for LAG that matches the number of rows in your CSV file.
+
+Run the java build to process the data loaded in the Kafka server.
+
+When complete, confirm the output file was written and re-run the Kafka command above. The LAG value should now be 0, indicating that all data was processed.
+
+
