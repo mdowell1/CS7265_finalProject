@@ -14,7 +14,7 @@ import java.io.IOException;
 
 public class AvgDelayHadoop {
 
-    private static final String FROM = "lax";
+    private static final String FROM = "san";
 
     public static void main(String[] args) throws Exception {
         long start = System.nanoTime(); // time before job runs
@@ -40,13 +40,6 @@ public class AvgDelayHadoop {
         double elapsedTimeInSecond = (double) elapsedTime / 1_000_000_000; // convert time from nanoseconds to seconds
         System.out.println(elapsedTimeInSecond + " seconds");
         System.exit(finish ? 0 : 1);
-    }
-
-    // Counter for holding delay and flights for all files - keeping this in
-    // makes the last line of the output file a full average
-    public enum HadoopCounter {
-        TotalDelay,
-        TotalFlights
     }
 
     // mapper - reads input and writes KVPs for each valid line
@@ -116,13 +109,12 @@ public class AvgDelayHadoop {
                 this.totalFlights++;
             }
 
-            // don't use these 2 lines if you want average for each file rather than all files
-            context.getCounter(HadoopCounter.TotalDelay).increment((long) totalDelay);
-            context.getCounter(HadoopCounter.TotalFlights).increment(totalFlights);
-            double finalTotal = context.getCounter(HadoopCounter.TotalDelay).getValue(); // total delay number
-            double finalCount = context.getCounter(HadoopCounter.TotalFlights).getValue(); // total flight number
-            double avg = finalTotal / finalCount;
-            context.write(new Text("Average"), new Text(String.valueOf(avg))); // output the average
+            double avg = totalDelay / totalFlights; // get average
+            context.write(new Text(key), new Text(String.valueOf(avg))); // output the average
+
+            // reset variables
+            totalDelay = 0;
+            totalFlights = 0;
         }
     }
 }

@@ -7,7 +7,7 @@ import static org.apache.spark.sql.functions.avg;
 
 
 public class AvgDelaySpark {
-    private static final String FROM = "LAX";
+    private static final String FROM = "SAN";
     static String input = "hdfs://localhost:9000/test";
     static String output = "hdfs://localhost:9000/output/outSpark";
 
@@ -32,13 +32,10 @@ public class AvgDelaySpark {
                 .and(df.col("Origin").contains(FROM)));
 
         //  Changes dataset to show the average delay per year
-        //   Dataset<Row> df2 = df.groupBy("Year").agg(avg(df.col("DepDelay")).as("AverageDelay"));
-
-        // Changes dataset to show the average delay for all years
-        Dataset<Row> df3 = df.groupBy("Origin").agg(avg(df.col("DepDelay")).as("AverageDelay"));
+        Dataset<Row> df2 = df.groupBy("Year").agg(avg(df.col("DepDelay")).as("AverageDelay"));
 
         // Create file with delay info
-        df3.coalesce(1)
+        df2.coalesce(1)
                 .write()
                 .option("header", false)
                 .csv(output);
